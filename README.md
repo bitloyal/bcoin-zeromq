@@ -1,8 +1,6 @@
 # bcoin-zeromq
 ### A zeromq plugin for bcoin
 
--
-
 ## Motivation
 
 Some bitcoin applications (such as [bitcore-node](https://github.com/bitpay/bitcore-node)) currently hook to bitcoin core's zeromq sockets to fetch incoming blocks and transactions. This plugin aims to bring such functionality to bcoin.
@@ -33,6 +31,8 @@ const node = new FullNode({
   zmqPubRawBlock: ZMQ_ADDRESS,
   zmqPubHashBlock: ZMQ_ADDRESS
 })
+
+node.use(ZeroMQ)
 ```
 
 A subscriber may then start receiving block and transaction data.
