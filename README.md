@@ -33,6 +33,7 @@ const node = new FullNode({
 })
 
 node.use(ZeroMQ)
+node.open()
 ```
 
 A subscriber may then start receiving block and transaction data.
