@@ -25,26 +25,24 @@ class ZeroMQ {
   }
 
   open () { 
-    const topics = Object.keys(ZeroMQ.TOPICS)
-    const tasks = []
-
-    Object.keys(ZeroMQ.TOPICS).forEach((topic) => {
-      const address = this.config.get(ZeroMQ.TOPICS[topic])
-      if (address) {
-        if (!this.sockets[address]) {
-          this.sockets[address] = zeromq.socket('pub')
-          tasks.push(new Promise((resolve, reject) => {
-            this.sockets[address].bind(address, (err) => {
-              if (err) return reject(err)
-              return resolve()
-            })
-          }))
+    return Promise.all(
+      Object.keys(ZeroMQ.TOPICS).reduce((tasks, topic) => {
+        const address = this.config.get(ZeroMQ.TOPICS[topic])
+        if (address) {
+          if (!this.sockets[address]) {
+            this.sockets[address] = zeromq.socket('pub')
+            tasks.push(new Promise((resolve, reject) => {
+              this.sockets[address].bind(address, (err) => {
+                if (err) return reject(err)
+                return resolve()
+              })
+            }))
+          }
+          this.topics[topic] = this.sockets[address]
         }
-        this.topics[topic] = this.sockets[address]
-      }
-    })
-
-    return Promise.all(tasks).then(() => {
+        return tasks
+      }, [])
+    ).then(() => {
       this.mempool.on('tx', this._txHandler)
       this.chain.on('block', this._blockHandler)
     })
@@ -54,19 +52,16 @@ class ZeroMQ {
     this.mempool.removeListener('tx', this._txHandler)
     this.chain.removeListener('block', this._blockHandler)
 
-    const addresses = Object.keys(this.sockets)
-    const tasks = []
-
-    Object.keys(this.sockets).forEach((address) => {
-      tasks.push(new Promise((resolve, reject) => {
-        this.sockets[address].unbind(address, (err) => {
-          if (err) return reject(err)
-          return resolve()
-        })
-      }))
-    })
-    
-    return Promise.all(tasks)
+    return Promise.all(
+      Object.keys(this.sockets).reduce((tasks, address) => (
+        tasks.concat(new Promise((resolve, reject) => {
+          this.sockets[address].unbind(address, (err) => {
+            if (err) return reject(err)
+            return resolve()
+          })
+        }))
+      ), [])
+    )
   }
 
   _txHandler (tx) {
