@@ -25,7 +25,6 @@ const ZMQ_ADDRESS = 'tcp://127.0.0.1:28332'
 
 const node = new FullNode({
   db: 'memory',
-  network: 'livenet',
   zmqPubRawTx: ZMQ_ADDRESS,
   zmqPubHashTx: ZMQ_ADDRESS,
   zmqPubRawBlock: ZMQ_ADDRESS,
@@ -33,7 +32,26 @@ const node = new FullNode({
 })
 
 node.use(ZeroMQ)
+
 node.open()
+  .then(() => node.connect())
+  .then(() => node.startSync())
 ```
 
-A subscriber may then start receiving block and transaction data.
+A subscriber may then start receiving block and transaction data. Here's an example using [zeromq](https://www.npmjs.com/package/zeromq):
+
+```js
+const zeromq = require('zeromq')
+
+const ZMQ_ADDRESS = 'tcp://127.0.0.1:28332'
+const ZMQ_TOPIC = 'hashblock'
+
+const subscriber = zeromq.socket('sub')
+
+subscriber.connect(ZMQ_ADDRESS)
+subscriber.subscribe(ZMQ_TOPIC)
+
+subscriber.on('message', (topic, msg) => {
+  console.log('%s %s', topic, msg)
+})
+```

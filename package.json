@@ -1,6 +1,6 @@
 {
   "name": "bcoin-zeromq",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A zeromq plugin for bcoin",
   "main": "index.js",
   "keywords": [
