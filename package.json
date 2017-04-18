@@ -1,6 +1,6 @@
 {
   "name": "bcoin-zeromq",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A zeromq plugin for bcoin",
   "main": "index.js",
   "keywords": [
@@ -15,9 +15,7 @@
   "author": "homeopatchy",
   "license": "MIT",
   "dependencies": {
-    "bcoin": "^1.0.0-beta.12",
-    "zeromq": "^4.2.1",
-    "zmq": "^2.15.3"
+    "zeromq": "^4.2.1"
   },
   "devDependencies": {
     "bcoin": "^1.0.0-beta.12",
